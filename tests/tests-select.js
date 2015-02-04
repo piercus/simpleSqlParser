@@ -425,6 +425,24 @@ var Select = [
 			limit: { from: 1, nb: 2 },
 		},
 	},
+	{
+		c: 'Simple select on a temporary (#) table',
+		q: 'SELECT * FROM #table',
+		a: {
+			type: 'select',
+			select: [
+				{ expression: '*', column: '*', table: null, alias: null, position: { start: 7, end: 8 } },
+			],
+			from: [
+				{ expression: '#table', table: '#table', alias: null, position: { start: 14, end: 20 } },
+			],
+			join: [],
+			where: null,
+			group: [],
+			order: [],
+			limit: null,
+		},
+	},
 ];
 
 suite('sql2ast - select');

@@ -81,7 +81,7 @@ function getPos(parser) {
 
 // The name of a column/table
 var colName = alt(
-	regex(/(?!(FROM|WHERE|GROUP BY|ORDER BY|LIMIT|INNER|LEFT|RIGHT|JOIN|ON|VALUES|SET)\s)[a-z*][a-z0-9_]*/i),
+	regex(/(?!(FROM|WHERE|GROUP BY|ORDER BY|LIMIT|INNER|LEFT|RIGHT|JOIN|ON|VALUES|SET)\s)#?[a-z*][a-z0-9_]*/i),
 	regex(/`[^`\\]*(?:\\.[^`\\]*)*`/)
 );
 
