@@ -443,6 +443,65 @@ var Select = [
 			limit: null,
 		},
 	},
+	{
+		c: 'Simple Select into a Select',
+		q: 'SELECT * FROM A, B, C',
+		a: {
+			type: 'select',
+			select: [
+				{ expression: '*', column: '*', table: null, alias: null, position: { start: 7, end: 8 } },
+			],
+			from: [
+				{ expression: 'A', table: 'A', alias: null, position: { start: 14, end: 15 } },
+				{ expression: 'B', table: 'B', alias: null, position: { start: 17, end: 18 } },
+				{ expression: 'C', table: 'C', alias: null, position: { start: 20, end: 21 } }
+
+			],
+			join: [],
+			where: null,
+			group: [],
+			order: [],
+			limit: null,
+		},
+	},	
+	{
+		c: 'Simple Select into a Select',
+		q: 'SELECT * FROM (SELECT * FROM table) AS FakeTable',
+		a: {
+			type: 'select',
+			select: [
+				{ expression: '*', column: '*', table: null, alias: null, position : { start : 7, end : 8 } },
+			],
+			from: [
+				{ 
+					expression: '(SELECT * FROM table) AS FakeTable', 
+					position : { start : 14, end : 48},
+					table: {
+						type: 'select',
+						select: [
+							{ expression: '*', column: '*', table: null, alias: null, position : { start : 22, end : 23 } },
+						],
+						from: [
+							{ expression: 'table', table: 'table', alias: null, position : { start : 29, end : 34 } },
+						],
+						join: [],
+						where: null,
+						group: [],
+						order: [],
+						limit: null,
+						position : { start : 15, end : 34 }, 
+						expression : '(SELECT * FROM table)'
+					}, 
+					alias: "FakeTable" 
+				},
+			],
+			join: [],
+			where: null,
+			group: [],
+			order: [],
+			limit: null,
+		},
+	},
 ];
 
 suite('sql2ast - select');

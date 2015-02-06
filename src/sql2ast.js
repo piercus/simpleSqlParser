@@ -73,7 +73,21 @@ function getPos(parser) {
 	});
 }
 
+//Add the expression 
+function getExpression(parser){
+	var f = {};
 
+	//hack Parsimmer to get the expression
+	// there must be a better way to do this here ?
+	f._ = function(stream, i){			
+		var o = getPos(parser)._(stream, i);
+		o.value.expression = stream.substring(o.value.position.start, o.value.position.end);
+		return o;
+	};
+
+	return f;
+}
+				
 
 /********************************************************************************************
 	LOW LEVEL PARSERS
@@ -272,11 +286,28 @@ var argListExpression = expression.map(function(node) {
 	return node.expression;
 });
 
+
+
+var selectParser;
+
 // Expression following a FROM statement
 var tableListExpression = seq(
 	alt(
 		tableAndColumn.map(mkString),
-		colName
+		colName,
+		seq(
+			string("("),
+			lazy(function(){//  selectParser is not defined yet, so we use lazy
+
+				return getExpression(selectParser);
+
+			}),
+			string(")")
+		).map(function(node){
+			var n = node[1];
+			n.expression = node[0]+node[1].expression+node[2];
+			return n;
+		})
 	),
 	opt(	// Alias
 		seq(
@@ -295,7 +326,7 @@ var tableListExpression = seq(
 	var n = {};
 	n.table = node[0];
 	n.alias = (node[1] !== null) ? node[1].alias : null;
-	n.expression = node[0] + ((node[1] !== null) ? node[1].expression : '');
+	n.expression = (node[0].expression || node[0]) + ((node[1] !== null) ? node[1].expression : '');
 	return n;
 });
 
@@ -449,7 +480,7 @@ var assignList = optionnalList(assignExpression);
 ********************************************************************************************/
 
 // SELECT parser
-var selectParser = seq(
+selectParser = seq(
 	regex(/SELECT/i).skip(optWhitespace).then(opt(colList)),
 	regex(/FROM/i).skip(optWhitespace).then(opt(tableList)),
 	opt(joinList),
@@ -466,7 +497,7 @@ var selectParser = seq(
 		where: node[3],
 		group: node[4],
 		order: node[5],
-		limit: node[6],
+		limit: node[6]	
 	};
 });
 
